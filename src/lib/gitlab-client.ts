@@ -87,5 +87,5 @@ export async function fetchMRAuthors(): Promise<Record<string, string>> {
 }
 
 export function isLiveMode(): boolean {
-  return !!(GITLAB_TOKEN && GITLAB_PROJECT_ID);
+  return !!(process.env.GITLAB_TOKEN && process.env.GITLAB_PROJECT_ID);
 }

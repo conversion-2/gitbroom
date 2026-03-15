@@ -1,112 +1,62 @@
 # 🧹 GitBroom - GitLab Branch Manager
 
-> GitLab 브랜치를 자동 분석하여 **삭제 후보를 분류하고 담당자 확인까지 돕는 웹 관리 도구**
+![CI](https://github.com/conversion-2/gitbroom/actions/workflows/ci.yml/badge.svg)
 
-GitBroom은 GitLab 프로젝트에서 증가하는 브랜치를 분석하여  
-**정리 대상 브랜치를 빠르게 식별할 수 있도록 도와주는 관리 도구**입니다.
+GitLab 저장소의 브랜치를 자동 분석하여  
+**삭제 후보 / 검토 필요 / 안전 브랜치**를 분류하고  
+**담당자 추정까지 제공하는 웹 기반 관리 도구**입니다.
 
-해커톤 MVP로 제작되었으며 **Mock 데이터로 즉시 시연 가능**하고  
-환경 변수 설정 시 **GitLab API와 실제 연동**됩니다.
-
----
-
-# 📌 Problem
-
-GitLab 프로젝트에서는 시간이 지날수록 다음 문제가 발생합니다.
-
-- 병합된 브랜치가 계속 누적됨
-- 오래된 브랜치가 방치됨
-- 담당자가 누구인지 알기 어려움
-- 저장소 관리 비용 증가
-
-특히 다음 상황에서 문제가 심각해집니다.
-
-- 여러 명이 동시에 작업하는 팀
-- 장기간 유지되는 서비스 레포지토리
-- 기능 브랜치 전략을 사용하는 프로젝트
-
-GitBroom은 이러한 문제를 해결하기 위해  
-**브랜치 상태를 자동 분석하고 관리 가능한 형태로 정리합니다.**
+해커톤 MVP 프로젝트로 **Mock 데이터 기반 즉시 실행**이 가능하며  
+GitLab API 연동 시 실제 저장소 분석도 지원합니다.
 
 ---
 
-# 🎯 Goal
+# 📌 문제 정의
 
-GitBroom의 목표는 다음과 같습니다.
+GitLab 저장소에서 브랜치가 지속적으로 증가하면 다음 문제가 발생합니다.
 
-- 브랜치 상태를 자동 분석
-- 정리 대상 브랜치 식별
-- 담당자 추정
-- 팀 브랜치 관리 효율 향상
+- 오래된 브랜치 관리 어려움
+- 이미 병합된 브랜치 방치
+- 누가 만든 브랜치인지 파악 어려움
+- 정리 작업의 수작업 의존
 
----
+GitBroom은 이러한 문제를 해결하기 위해
 
-# 🚀 빠른 시작
+- 브랜치 상태 자동 분석
+- 삭제 후보 자동 분류
+- 담당자 자동 추정
+- 정리 알림 메시지 생성
 
-```bash
-npm install
-npm run dev
-```
-
-브라우저에서 접속
-
-```
-http://localhost:3000
-```
-
-GitLab 환경 변수 없이 실행하면  
-**Mock 모드로 24개의 샘플 브랜치가 자동 생성됩니다.**
-
-즉시 기능을 시연할 수 있습니다.
-
----
-
-# 🔌 GitLab 연동 (선택)
-
-실제 GitLab 프로젝트와 연동하려면 다음을 설정합니다.
-
-```bash
-cp .env.local.example .env.local
-```
-
-`.env.local` 편집
-
-```env
-GITLAB_URL=https://gitlab.example.com
-GITLAB_TOKEN=glpat-xxxxxxxxxxxxxxxxxxxx
-GITLAB_PROJECT_ID=12345678
-```
-
-설정 후 서버를 재시작하면
-
-**LIVE 모드로 실제 브랜치 데이터를 분석합니다.**
+기능을 제공합니다.
 
 ---
 
 # ✨ 주요 기능
 
 | 기능 | 설명 |
-|------|------|
-| 자동 분류 | 병합 여부, 경과 시간, 브랜치 패턴 기반으로 안전/확인필요/삭제권장 분류 |
-| 담당자 추정 | MR 작성자 → 브랜치명 패턴 → 커밋 작성자 순으로 추정 |
-| 분류 규칙 조정 | UI에서 staleDays / reviewDays 규칙 즉시 변경 |
-| 알림 메시지 생성 | 담당자에게 보낼 메시지 자동 생성 + 클립보드 복사 |
-| 검색/필터/정렬 | 브랜치명/담당자 검색, 분류 필터, 다양한 정렬 |
+|-----|-----|
+| 브랜치 자동 분류 | stale / merged / temp 패턴 기반 분석 |
+| 담당자 추정 | MR author → 브랜치 패턴 → 커밋 author |
+| 검색 / 필터 / 정렬 | 브랜치 이름, 담당자 기준 탐색 |
+| 규칙 설정 | staleDays / reviewDays UI 변경 |
+| 알림 메시지 생성 | 담당자에게 보낼 메시지 자동 생성 |
+| Mock / Live 모드 | GitLab API 없이도 즉시 실행 |
 
 ---
 
 # 🧠 분류 알고리즘
 
-GitBroom은 다음 규칙으로 브랜치를 분류합니다.
-
 ```
-기본/보호 브랜치           → 안전
-병합됨 + reviewDays 초과  → 삭제 권장
-병합됨 + 최근              → 확인 필요
-임시패턴 + staleDays 초과 → 삭제 권장
-임시패턴 + 최근            → 확인 필요
-staleDays 초과             → 확인 필요
-그 외                      → 안전
+default/protected branch → safe
+
+merged + reviewDays 초과 → delete-recommended
+merged + 최근 → review
+
+temp pattern + staleDays 초과 → delete-recommended
+temp pattern + 최근 → review
+
+staleDays 초과 → review
+그 외 → safe
 ```
 
 기본값
@@ -118,123 +68,220 @@ reviewDays = 30
 
 ---
 
-# 🏗 Architecture
+# 🏗 아키텍처
 
-GitBroom은 다음 데이터 흐름을 사용합니다.
-
-```
-useBranches Hook
-      ↓
-API /api/branches
-      ↓
-Branch Classifier
-      ↓
-Owner Estimator
-      ↓
-UI Rendering
-```
-
-데이터 소스는 두 가지 모드를 지원합니다.
-
-### Mock Mode
+GitBroom은 **4계층 구조**로 설계되었습니다.
 
 ```
-src/lib/mock-data.ts
+Presentation Layer
+    ↓
+API Layer
+    ↓
+Domain Logic Layer
+    ↓
+Data Source Layer
 ```
 
-24개의 샘플 브랜치 제공
+### Presentation
+
+```
+Next.js App Router
+React UI
+Tailwind CSS
+shadcn/ui
+```
+
+### API Layer
+
+```
+/api/branches
+```
+
+브랜치 데이터 수집 및 필터/정렬 처리
+
+### Domain Logic
+
+```
+classifier.ts
+owner-estimator.ts
+gitlab-client.ts
+```
+
+핵심 비즈니스 로직
+
+### Data Source
+
+```
+Mock Data
+GitLab REST API
+```
+
+환경 변수 존재 여부에 따라 **Mock / Live 자동 전환**
 
 ---
 
-### Live Mode
+# 🔁 데이터 흐름
 
 ```
-src/lib/gitlab-client.ts
-```
-
-GitLab REST API 호출
-
----
-
-# 🗂 Project Structure
-
-```
-src
- ├ app
- ├ components
- ├ hooks
- ├ lib
- │   ├ classifier.ts
- │   ├ gitlab-client.ts
- │   ├ owner-estimator.ts
- │   └ mock-data.ts
- └ api
+GitLab API / Mock Data
+        ↓
+classifier
+        ↓
+owner-estimator
+        ↓
+API response
+        ↓
+React UI
 ```
 
 ---
 
-# ⚙️ 기술 스택
+# 🧪 테스트 전략
 
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- GitLab REST API
+GitBroom은 **핵심 로직 중심 테스트 전략**을 사용합니다.
 
-특징
+### 테스트 대상
 
-- DB 없음
-- API 기반 분석
-- 빠른 MVP 개발 구조
+```
+classifier.ts
+owner-estimator.ts
+gitlab-client.ts
+/api/branches API
+page.tsx UI
+```
 
----
+### 테스트 실행
 
-# 📊 Demo Mode
-
-GitLab 계정 없이도 다음 기능을 바로 체험할 수 있습니다.
-
-- 브랜치 자동 분석
-- 분류 규칙 변경
-- 담당자 추정
-- 알림 메시지 생성
-
----
-
-# ⚠️ 한계점 및 향후 계획
-
-## 현재 한계
-
-- 브랜치 삭제 실행 기능 없음
-- GitLab webhook 미지원
-- 팀원 목록 연동 없음
-
----
-
-## 향후 계획
-
-- GitLab API로 브랜치 직접 삭제
-- Slack / Teams 자동 알림
-- 정기 브랜치 정리 리포트
-- 브랜치 화이트리스트 관리
-
----
-
-## 테스트
-
-로컬에서 테스트를 실행하려면 다음 명령을 사용합니다.
-
-```bash
+```
 npm run test
+```
+
+watch 모드
+
+```
 npm run test:watch
+```
+
+coverage 측정
+
+```
 npm run coverage
 ```
 
-CI 환경에서는 다음 검증이 자동 수행됩니다.
+### 현재 커버리지
 
-- type check
-- lint
-- unit test
-- production build
+```
+Statements: 7.81%
+Branches:   73.91%
+Functions:  72.22%
+```
+
+UI 컴포넌트는 현재 렌더링 테스트만 적용되었으며  
+핵심 도메인 로직 안정성을 우선 검증하고 있습니다.
+
+---
+
+# ⚙️ CI / 자동 검증
+
+GitHub Actions를 통해 다음 검증이 자동 수행됩니다.
+
+```
+Install dependencies
+Type Check
+Lint
+Test
+Build
+```
+
+워크플로 파일
+
+```
+.github/workflows/ci.yml
+```
+
+모든 Pull Request 및 main push 시 자동 실행됩니다.
+
+---
+
+# 🛠 기술 스택
+
+| 영역 | 기술 |
+|-----|-----|
+| Framework | Next.js 14 |
+| Language | TypeScript |
+| UI | React 19 |
+| Styling | Tailwind CSS |
+| UI Library | shadcn/ui |
+| Icons | lucide-react |
+| Testing | Vitest |
+| CI | GitHub Actions |
+
+---
+
+# 🚀 실행 방법
+
+### 설치
+
+```
+npm install
+```
+
+### 개발 서버 실행
+
+```
+npm run dev
+```
+
+접속
+
+```
+http://localhost:3000
+```
+
+---
+
+# 🔗 GitLab 연동
+
+`.env.local`
+
+```
+GITLAB_URL=https://gitlab.example.com
+GITLAB_TOKEN=glpat-xxxx
+GITLAB_PROJECT_ID=123456
+```
+
+환경 변수 없으면 **Mock 모드 자동 실행**
+
+---
+
+# 📂 프로젝트 구조
+
+```
+src
+ ├ components
+ │   └ dashboard
+ ├ lib
+ │   ├ classifier.ts
+ │   ├ owner-estimator.ts
+ │   ├ gitlab-client.ts
+ │   └ config.ts
+ ├ app
+ │   ├ page.tsx
+ │   └ api/branches
+ │        └ route.ts
+```
+
+---
+
+# 📈 향후 계획
+
+- GitLab 브랜치 직접 삭제 기능
+- Slack / Teams 알림
+- 브랜치 정리 자동 스케줄링
+- UI 테스트 확대
+- GitLab API Mock 테스트 강화
+
+---
 
 # 📄 License
 

@@ -1,4 +1,7 @@
 import { BranchInfo, ClassifiedBranch, ClassificationConfig } from "./types";
+import { DEFAULT_CONFIG } from "./config";
+
+export const DEFAULT_CLASSIFICATION_CONFIG = DEFAULT_CONFIG;
 
 function matchesPattern(name: string, patterns: string[]): boolean {
   return patterns.some((p) => {

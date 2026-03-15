@@ -4,15 +4,25 @@ import {
   DEFAULT_CLASSIFICATION_CONFIG,
 } from "@/lib/classifier";
 
+const baseBranch = {
+  protected: false,
+  merged: false,
+  isDefault: false,
+  lastCommitDate: new Date(),
+  lastCommitMessage: "",
+  lastCommitAuthor: "",
+  ageInDays: 0,
+  webUrl: "",
+};
+
 describe("classifyBranch", () => {
   it("default/protected branch는 safe로 분류한다", () => {
     const result = classifyBranch(
       {
+        ...baseBranch,
         name: "main",
         protected: true,
-        merged: false,
         isDefault: true,
-        lastCommitAt: new Date().toISOString(),
       },
       DEFAULT_CLASSIFICATION_CONFIG,
     );
@@ -26,15 +36,15 @@ describe("classifyBranch", () => {
 
     const result = classifyBranch(
       {
+        ...baseBranch,
         name: "feature/old-merged-branch",
-        protected: false,
         merged: true,
-        isDefault: false,
-        lastCommitAt: oldDate.toISOString(),
+        lastCommitDate: oldDate,
+        ageInDays: 40,
       },
       {
         ...DEFAULT_CLASSIFICATION_CONFIG,
-        reviewDays: 30,
+        reviewDaysThreshold: 30,
       },
     );
 
@@ -47,15 +57,14 @@ describe("classifyBranch", () => {
 
     const result = classifyBranch(
       {
+        ...baseBranch,
         name: "temp/debug-branch",
-        protected: false,
-        merged: false,
-        isDefault: false,
-        lastCommitAt: oldDate.toISOString(),
+        lastCommitDate: oldDate,
+        ageInDays: 120,
       },
       {
         ...DEFAULT_CLASSIFICATION_CONFIG,
-        staleDays: 90,
+        staleDaysThreshold: 90,
       },
     );
 

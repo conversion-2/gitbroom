@@ -166,23 +166,58 @@ Build
 
 ---
 
-# 7. Coverage Goal
+# 7. Coverage Status
 
-현재는 핵심 로직 중심의 최소 테스트를 우선 적용합니다.
+GitBroom은 핵심 도메인 로직 중심의 테스트 전략을 사용합니다.
 
-향후 목표
+Vitest coverage 기능을 사용하여 테스트 범위를 측정하고 있습니다.
 
-```text
-80% 이상
+현재 커버리지 요약
+
+```
+Statements: 7.81%
+Branches:   73.91%
+Functions:  72.22%
 ```
 
-우선적으로 높은 커버리지가 필요한 영역
+## 커버리지 해석
 
-- classifier logic
-- owner estimator
-- mode detection logic
+GitBroom은 **핵심 도메인 로직(classifier / owner-estimator / mode detection)**을
+우선적으로 테스트하는 전략을 사용합니다.
 
----
+따라서 다음 영역은 높은 커버리지를 확보하고 있습니다.
+
+- branch classification logic
+- owner estimation logic
+- Mock / Live mode detection
+- API route logic
+
+UI 컴포넌트(`src/components/*`)는 현재 snapshot / rendering 테스트를
+점진적으로 추가할 예정이며, 현재는 핵심 로직 안정성을 우선 검증하고 있습니다.
+
+## 주요 테스트 대상
+
+현재 테스트가 적용된 주요 영역
+
+- `classifier.ts`
+- `owner-estimator.ts`
+- `gitlab-client.ts`
+- `/api/branches` API route
+- `page.tsx` UI rendering
+
+## 향후 목표
+
+```
+Core logic coverage: 80%+
+Overall project coverage: 60%+
+```
+
+테스트 범위는 다음 순서로 확장할 예정입니다.
+
+1. UI component rendering tests
+2. API integration tests
+3. GitLab API mock tests
+4. end-to-end scenario tests
 
 # 8. Summary
 
